@@ -1,0 +1,7 @@
+1. Thêm file âm thanh
+2. Thêm folder ảnh -> làm chuyển động cho hình ảnh.
+3. Đọc/Ghi dữ liệu từ file json -> lấy tên địa danh từ file.
+4. Chọn màu nền.
+5. Render mp4 file.
+
+// Arial,Bahnschrift,Bookman Old Style,Calibri,Cambria,Century,Consolas,Minion Pro,Tahoma

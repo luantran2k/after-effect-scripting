@@ -1,0 +1,17 @@
+- Xây dựng kịch bản với chủ đề tự chọn cho bài lập trình kỹ xảo - file Word (Mô tả nội dung bài cuối kỳ, cách thức thực hiện, các tư liệu cho bài và hình ảnh kết quả)
+- Viết Script thực hiện theo kịch bản đã xây dựng tối thiểu có các thành phần chức năng sau:
+  + Có giao diện điều khiển cho người dùng (Lưu ý: giao diện không quá dài so với màn hình. Nếu dài có thể xoay ngang)
+  + Có các nút chức năng tạo và lưu project; tạo composition với tên nhập vào.
+  + Tạo các loại layer theo kịch bản đã dựng như(text, light, shape, solid, camera,..)
+  + Có nút hướng dẫn hiển thị các bước thực hiện cho người dùng
+  + Có nút chức năng Render để xuất sản phầm(lưu ở thư mục mặc định với tên theo tên composition)
+- Yêu cầu:
+  + Có ít nhất 2 layer gồm text, shape hoặc nhiều hơn.
+  + Nội dung text: Tên sv - Mã sv.
+  + Kỹ xảo: Có ít nhất một kỹ xảo như chuyển động, thay đổi kích thước, màu sắc, ẩn hiện hoặc kết hợp các kỹ xảo theo kịch bản đã xây dựng.
+  + Giao diện panel điều khiển rõ ràng, trình bày đẹp, các nút thẳng hàng, dễ thao tác.
+  + Thông tin hướng dẫn đầy đủ, rõ ràng từng bước.
+  + Định dạng xuất file theo chuẩn H.264, 30h/s, 720p.
+  + Nộp bài đầy đủ file code, sản phẩm đã render(.mp4 hoặc tương đương. Không nộp định dạng .avi) và file kịch bản. Nén các file thành 1 file và đặt tên theo yêu cầu. Ho_va_ten-MaSV.rar.
+  + Sản phẩm code phải được kiểm tra kỹ và chạy được không bị lỗi trước khi nộp, nếu sản phẩm không chạy sẽ không có điểm (Mô tả rõ chức năng cho người dùng biết cách chạy trong chức năng help).
+  + Sản phẩm chạy trên window.
