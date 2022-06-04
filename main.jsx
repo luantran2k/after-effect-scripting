@@ -2,9 +2,9 @@ var defaultHexColor = '0xF96163';
 var colorHexObj = {
     hexComp: defaultHexColor,
     hexBackground: defaultHexColor,
-    hexText: '0xFFFFFF'
+    hexText: '0xF9F960'
 };
-
+var mainComp;
 // MAINPALETTE
 // ===========
 var mainPalette = new Window('palette');
@@ -37,13 +37,13 @@ var createProjectBtn = projectControlPanel.add('button', undefined, undefined, {
     name: 'createProjectBtn'
 });
 createProjectBtn.text = 'Tạo project';
-createProjectBtn.preferredSize.width = 130;
+createProjectBtn.preferredSize.width = 140;
 
 var saveProjectBtn = projectControlPanel.add('button', undefined, undefined, {
     name: 'saveProjectBtn'
 });
 saveProjectBtn.text = 'Lưu project';
-saveProjectBtn.preferredSize.width = 130;
+saveProjectBtn.preferredSize.width = 140;
 
 // ASSESTPANEL
 // ===========
@@ -56,26 +56,12 @@ assestPanel.alignChildren = ['center', 'top'];
 assestPanel.spacing = 10;
 assestPanel.margins = 10;
 
-var backgroundMusicBtn = assestPanel.add('button', undefined, undefined, {
-    name: 'backgroundMusicBtn'
+var assetBtn = assestPanel.add('button', undefined, undefined, {
+    name: 'assetBtn'
 });
-backgroundMusicBtn.helpTip = 'Nhạc nền của đoạn video giới thiệu';
-backgroundMusicBtn.text = 'Chọn nhạc nền';
-backgroundMusicBtn.preferredSize.width = 140;
-
-var mascotBtn = assestPanel.add('button', undefined, undefined, {
-    name: 'mascotBtn'
-});
-mascotBtn.helpTip = 'Folder chứa ảnh của linh vật';
-mascotBtn.text = 'Chọn ảnh linh vật';
-mascotBtn.preferredSize.width = 140;
-
-var placeBtn = assestPanel.add('button', undefined, undefined, {
-    name: 'placeBtn'
-});
-placeBtn.helpTip = 'Folder chứa ảnh của địa điẻm thi đấu';
-placeBtn.text = 'Chọn ảnh địa điểm';
-placeBtn.preferredSize.width = 140;
+assetBtn.helpTip = 'Folder tài nguyên chứa toàn bộ dữ liệu cần thiết';
+assetBtn.text = 'Chọn folder asset';
+assetBtn.preferredSize.width = 140;
 
 // HELPGROUP
 // =========
@@ -185,11 +171,11 @@ backgroundColor.fillBrush = backgroundColor.graphics.newBrush(
 );
 backgroundColor.onDraw = customDraw;
 
-var isMultiColor = backgroundPanel.add('checkbox', undefined, undefined, {
-    name: 'isMultiColor'
-});
-isMultiColor.text = 'Nhiều màu';
-isMultiColor.helpTip = 'Phầm mềm sẽ sử dụng nhiều màu nền khác nhau cho video';
+// var isMultiColor = backgroundPanel.add('checkbox', undefined, undefined, {
+//     name: 'isMultiColor'
+// });
+// isMultiColor.text = 'Nhiều màu';
+// isMultiColor.helpTip = 'Phầm mềm sẽ sử dụng nhiều màu nền khác nhau cho video';
 
 // WELCOMEPANEL
 // ============
@@ -203,11 +189,11 @@ welcomePanel.alignChildren = ['left', 'top'];
 welcomePanel.spacing = 10;
 welcomePanel.margins = 10;
 
-var welcompText = welcomePanel.add(
-    'edittext {properties: {name: "welcompText"}}'
+var welcomeText = welcomePanel.add(
+    'edittext {properties: {name: "welcomeText"}}'
 );
-welcompText.text = 'Chào mừng đến với Sea Game 31 tại Việt Nam';
-welcompText.preferredSize.width = 380;
+welcomeText.text = 'Chào mừng đến với Sea Game 31 tại Việt Nam';
+welcomeText.preferredSize.width = 380;
 
 // TEXTGROUP
 // =========
@@ -223,8 +209,7 @@ var createWelcomeBtn = textGroup.add('button', undefined, undefined, {
 createWelcomeBtn.text = 'Tạo text';
 
 // prettier-ignore
-var fontSizeDropDown_array = ["20","-","22","-","24","-","26","-","28","-"
-,"30","-","32","-","34","-","36","-","38","-","40","-","42","-","44"];
+var fontSizeDropDown_array = [24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,];
 var fontSizeDropDown = textGroup.add('dropdownlist', undefined, undefined, {
     name: 'fontSizeDropDown',
     items: fontSizeDropDown_array
@@ -232,8 +217,8 @@ var fontSizeDropDown = textGroup.add('dropdownlist', undefined, undefined, {
 fontSizeDropDown.selection = 0;
 
 // prettier-ignore
-var fontFamilyDropDown_array = ["Arial","-","Bahnschrift","-","Bookman Old Style","-","Calibri"
-,"-","Cambria","-","Century","-","Consolas","-","Minion Pro","-","Tahoma","-","Times New Roman"];
+var fontFamilyDropDown_array = ["Arial","Bahnschrift","Bookman Old Style"
+,"Calibri","Cambria","Century","Consolas","Minion Pro","Tahoma"];
 var fontFamilyDropDown = textGroup.add('dropdownlist', undefined, undefined, {
     name: 'fontFamilyDropDown',
     items: fontFamilyDropDown_array
@@ -244,12 +229,19 @@ fontFamilyDropDown.selection = 0;
 var textColor = textGroup.add('button', undefined, undefined, {
     name: 'textColor'
 });
+textColor.helpTip = 'Màu nền chữ';
 textColor.size = [40, 28];
 textColor.fillBrush = textColor.graphics.newBrush(
     textColor.graphics.BrushType.SOLID_COLOR,
     convertHextoRgb(colorHexObj.hexText)
 );
 textColor.onDraw = customDraw;
+
+var isSrokeCheckbox = textGroup.add('checkbox', undefined, undefined, {
+    name: 'isSrokeCheckbox'
+});
+
+isSrokeCheckbox.text = 'Viền';
 
 // FINALGROUP
 // ==========
@@ -277,17 +269,7 @@ mainPalette.show();
 
 //// Function
 
-//Color Picker
-// var hexComp = '0xF96163';
-// var hexBackground = '0xF96163';
-// var hex = '0xF96163';
-// var compColorValue = [0, 0, 0];
-// var backGroundColorValue = [0, 0, 0];
-// var textColorValue = [0, 0, 0];
-// compColor.onClick = chooseColor;
-// backgroundColor.onClick = chooseColor;
-// textColor.onClick = chooseColor;
-
+// 0. Color Picker
 compColor.onClick = function () {
     chooseColor('hexComp', compColor);
 };
@@ -334,7 +316,23 @@ function updateButtonColour(button, rgbArray) {
     button.enabled = true;
 }
 
-var mainComp;
+// 1. Create Project
+createProjectBtn.onClick = function () {
+    app.newProject();
+    app.project.saveWithDialog();
+};
+
+// 2. Save Project
+saveProjectBtn.onClick = function () {
+    app.project.save();
+};
+
+// 3. Add asset to project
+assetBtn.onClick = function () {
+    var backgroundMusic = app.project.importFileWithDialog();
+};
+
+// 4. Add composition
 createCompBtn.onClick = function () {
     mainComp = app.project.items.addComp(
         nameComp.text,
@@ -347,12 +345,53 @@ createCompBtn.onClick = function () {
     mainComp.bgColor = convertHextoRgb(colorHexObj.hexComp);
 };
 
+// 5. Add background
 createBackgroundColorBtn.onClick = function () {
     var solidLayer = mainComp.layers.addSolid(
-        mainComp.bgColor,
+        convertHextoRgb(colorHexObj.hexBackground),
         'backgroundLayer',
         1280,
         720,
         1
     );
+};
+
+// 6. Add tex
+createWelcomeBtn.onClick = function () {
+    var welcomeTextValue = welcomeText.text;
+    var colorTextValue = convertHextoRgb(colorHexObj.hexText);
+    var fontFamilyTextValue = fontFamilyDropDown.selection.text;
+    var fontSizeTextValue = fontSizeDropDown.selection.text;
+    var isStroke = isSrokeCheckbox.value;
+
+    try {
+        var textLayer = mainComp.layers.addText();
+    } catch (error) {
+        alert('Bạn phải tạo composition trước');
+        return;
+    }
+    var text_property = textLayer.sourceText;
+    var text_value = text_property.value;
+
+    text_value.resetCharStyle();
+    text_value.resetParagraphStyle();
+    text_value.text = welcomeTextValue;
+    text_value.fillColor = colorTextValue;
+    text_value.fontSize = fontSizeTextValue;
+    text_value.font = fontFamilyTextValue;
+    text_value.strokeColor = [0, 0, 0];
+    text_value.strokeWidth = 2;
+    text_value.applyStroke = isStroke;
+    text_property.setValue(text_value);
+    text_value.justification = ParagraphJustification.CENTER_JUSTIFY;
+    text_property.setValue(text_value);
+
+    textLayer.transform.opacity.setValueAtTime(0, 0);
+    textLayer.transform.opacity.setValueAtTime(1.9, 0);
+    textLayer.transform.opacity.setValueAtTime(2, 100);
+    textLayer.transform.opacity.setValueAtTime(9.9, 100);
+    textLayer.transform.opacity.setValueAtTime(10, 0);
+
+    // newTextWindow.hide();
+    // mainWindow.show();
 };
