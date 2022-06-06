@@ -67,13 +67,36 @@
 //     if (error) throw error;
 // });
 
-var languageObj = {
-    'Tiếng việt': {
-        1: 'Chào mừng bạn đến với ',
-        2: '\nđược tổ chức tại ',
-        3: 'Bao gồm các môn thi đấu sau'
-    },
-    English: {}
-};
+// var languageObj = {
+//     'Tiếng việt': {
+//         1: 'Chào mừng bạn đến với ',
+//         2: '\nđược tổ chức tại ',
+//         3: 'Bao gồm các môn thi đấu sau'
+//     },
+//     English: {}
+// };
 
-console.log(languageObj['Tiếng việt'][1]);
+// console.log(languageObj['Tiếng việt'][1]);
+// var start = 10;
+// var keyOpacity = {};
+
+// keyOpacity[start] = 0;
+// keyOpacity[start + 0.5] = 100;
+// keyOpacity[start + 2] = 99;
+// keyOpacity[start + 2.5] = 0;
+// for (var prop in keyOpacity) {
+//     console.log(prop);
+// }
+
+var i = 2;
+switch (i) {
+    case 1:
+        console.log(1);
+        break;
+    case 2:
+        console.log(2);
+        break;
+    case 3:
+        console.log(3);
+        break;
+}

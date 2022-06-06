@@ -458,6 +458,7 @@ loadDataToCompBtn.onClick = function () {
         return;
     }
     loadIntro(assetFolder);
+    loadSport(assetFolder);
 };
 
 function loadIntro(assetFolder) {
@@ -631,4 +632,74 @@ function sportTextAnimation() {
         9.2: 99,
         9.5: 0
     });
+}
+
+function loadSport(assetFolder) {
+    var sportFolder = assetFolder.item(2);
+    var du = sportFolder.numItems % 3;
+    var start = 9.8;
+    for (var i = 1; i <= sportFolder.numItems - du; i += 3) {
+        var sportSlot1 = sportFolder.item(i);
+        var sportSlot2 = sportFolder.item(i + 1);
+        var sportSlot3 = sportFolder.item(i + 2);
+        addSport(sportSlot1, start, 1);
+        addSport(sportSlot2, start + 1, 2);
+        addSport(sportSlot3, start + 2, 3);
+        start += 5;
+    }
+}
+
+function addSport(sport, start, slot) {
+    var sportLayer = mainComp.layers.add(sport);
+    var nameSport = sport.name.slice(0, -4);
+    var sportNameLayer = mainComp.layers.addText();
+    var sportNameLayerProperty = sportNameLayer.sourceText;
+    var sportNameLayerValue = sportNameLayerProperty.value;
+
+    sportNameLayerValue.resetCharStyle();
+    sportNameLayerValue.resetParagraphStyle();
+    sportNameLayerValue.text = nameSport;
+    sportNameLayerValue.fillColor = convertHextoRgb(colorHexObj.hexText);
+    sportNameLayerValue.fontSize = 48;
+    sportNameLayerValue.font = fontFamilyDropDown.selection.text;
+    sportNameLayerProperty.setValue(sportNameLayerValue);
+    sportNameLayerValue.isStroke = isSrokeCheckbox.value;
+    sportNameLayerProperty.setValue(sportNameLayerValue);
+    var keyOpacity = {};
+    keyOpacity[start] = 0;
+    keyOpacity[start + 0.5] = 100;
+    keyOpacity[start + 2] = 99;
+    keyOpacity[start + 2.5] = 0;
+
+    var keyPosition1 = {};
+    keyPosition1[start] = [220, 200];
+    keyPosition1[start + 0.5] = [220, 360];
+
+    var keyPosition2 = {};
+    keyPosition2[start] = [640, 200];
+    keyPosition2[start + 0.5] = [640, 360];
+
+    var keyPosition3 = {};
+    keyPosition3[start] = [1060, 200];
+    keyPosition3[start + 0.5] = [1060, 360];
+    switch (slot) {
+        case 1:
+            setTransform(sportNameLayer, 'position', { 0: [80, 650] });
+            setTransform(sportLayer, 'position', keyPosition1);
+            setTransform(sportLayer, 'opacity', keyOpacity);
+            setTransform(sportNameLayer, 'opacity', keyOpacity);
+            break;
+        case 2:
+            setTransform(sportNameLayer, 'position', { 0: [540, 650] });
+            setTransform(sportLayer, 'position', keyPosition2);
+            setTransform(sportLayer, 'opacity', keyOpacity);
+            setTransform(sportNameLayer, 'opacity', keyOpacity);
+            break;
+        case 3:
+            setTransform(sportNameLayer, 'position', { 0: [900, 650] });
+            setTransform(sportLayer, 'position', keyPosition3);
+            setTransform(sportLayer, 'opacity', keyOpacity);
+            setTransform(sportNameLayer, 'opacity', keyOpacity);
+            break;
+    }
 }
