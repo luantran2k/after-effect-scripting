@@ -1,8 +1,21 @@
-var defaultHexColor = '0xF96163';
+﻿var defaultHexColor = '0xF96163';
 var colorHexObj = {
     hexComp: defaultHexColor,
     hexBackground: defaultHexColor,
     hexText: '0xF9F960'
+};
+
+var languageObj = {
+    'Tiếng việt': {
+        1: 'Chào mừng bạn đến với ',
+        2: '\nđược tổ chức tại ',
+        3: 'Bao gồm các môn thi đấu sau'
+    },
+    English: {
+        1: 'Welcome to the ',
+        2: '\nhosted in ',
+        3: 'With sports'
+    }
 };
 var mainComp;
 // MAINPALETTE
@@ -113,8 +126,8 @@ compPanel.margins = 10;
 
 var nameComp = compPanel.add('edittext {properties: {name: "nameComp"}}');
 nameComp.helpTip = 'Nhập tên composition';
-nameComp.text = 'Seagame31';
-nameComp.preferredSize.width = 380;
+nameComp.text = 'SeaGame31';
+nameComp.preferredSize.width = 420;
 
 // COMPELEMENT
 // ===========
@@ -140,93 +153,132 @@ compColor.fillBrush = compColor.graphics.newBrush(
 );
 compColor.onDraw = customDraw;
 
-// BACKGROUNDPANEL
-// ===============
-var backgroundPanel = implementationPanel.add('panel', undefined, undefined, {
-    name: 'backgroundPanel'
-});
-backgroundPanel.text = 'Nền';
-backgroundPanel.preferredSize.width = 400;
-backgroundPanel.orientation = 'row';
-backgroundPanel.alignChildren = ['left', 'center'];
-backgroundPanel.spacing = 10;
-backgroundPanel.margins = 10;
-
-var createBackgroundColorBtn = backgroundPanel.add(
-    'button',
-    undefined,
-    undefined,
-    { name: 'createBackgroundColorBtn' }
-);
-createBackgroundColorBtn.text = 'Tạo nền';
-
-var backgroundColor = backgroundPanel.add('button', undefined, undefined, {
-    name: 'backgroundColor'
-});
-backgroundColor.helpTip = 'Chọn màu nền cho video';
-backgroundColor.size = [40, 28];
-backgroundColor.fillBrush = backgroundColor.graphics.newBrush(
-    backgroundColor.graphics.BrushType.SOLID_COLOR,
-    convertHextoRgb(colorHexObj.hexBackground)
-);
-backgroundColor.onDraw = customDraw;
-
-// var isMultiColor = backgroundPanel.add('checkbox', undefined, undefined, {
-//     name: 'isMultiColor'
-// });
-// isMultiColor.text = 'Nhiều màu';
-// isMultiColor.helpTip = 'Phầm mềm sẽ sử dụng nhiều màu nền khác nhau cho video';
-
 // WELCOMEPANEL
 // ============
 var welcomePanel = implementationPanel.add('panel', undefined, undefined, {
     name: 'welcomePanel'
 });
-welcomePanel.text = 'Welcome text';
+welcomePanel.text = 'Text';
 welcomePanel.preferredSize.width = 400;
 welcomePanel.orientation = 'column';
 welcomePanel.alignChildren = ['left', 'top'];
 welcomePanel.spacing = 10;
 welcomePanel.margins = 10;
 
-var welcomeText = welcomePanel.add(
-    'edittext {properties: {name: "welcomeText"}}'
+var textGroup1 = welcomePanel.add('group', undefined, { name: 'textGroup1' });
+textGroup1.orientation = 'row';
+textGroup1.alignChildren = ['left', 'center'];
+textGroup1.spacing = 10;
+textGroup1.margins = 0;
+
+var nameEventGroup = textGroup1.add('group', undefined, {
+    name: 'nameEventGroup'
+});
+nameEventGroup.orientation = 'column';
+nameEventGroup.alignChildren = ['left', 'center'];
+nameEventGroup.spacing = 10;
+nameEventGroup.margins = 0;
+
+var eventNameLabel = nameEventGroup.add('statictext', undefined, undefined, {
+    name: 'eventNameLabel'
+});
+eventNameLabel.text = 'Tên sự kiện';
+
+var eventNameText = nameEventGroup.add(
+    'edittext {properties: {name: "eventNameText"}}'
 );
-welcomeText.text = 'Chào mừng đến với Sea Game 31 tại Việt Nam';
-welcomeText.preferredSize.width = 380;
+eventNameText.text = 'Sea Game 31';
+eventNameText.helpTip = 'Nhập tên sự kiện';
+eventNameText.preferredSize.width = 200;
 
-// TEXTGROUP
+var hostNameGroup = textGroup1.add('group', undefined, {
+    name: 'hostNameGroup'
+});
+hostNameGroup.orientation = 'column';
+hostNameGroup.alignChildren = ['left', 'center'];
+hostNameGroup.spacing = 10;
+hostNameGroup.margins = 0;
+
+var hostNameLabel = hostNameGroup.add('statictext', undefined, undefined, {
+    name: 'hostNameGroup'
+});
+hostNameLabel.text = 'Chủ nhà';
+
+var hostNameText = hostNameGroup.add(
+    'edittext {properties: {name: "hostNameText"}}'
+);
+hostNameText.text = 'Việt Nam';
+hostNameText.helpTip = 'Nhập tên quốc gia đăng cai';
+hostNameText.preferredSize.width = 200;
+// textGroup2
 // =========
-var textGroup = welcomePanel.add('group', undefined, { name: 'textGroup' });
-textGroup.orientation = 'row';
-textGroup.alignChildren = ['left', 'center'];
-textGroup.spacing = 10;
-textGroup.margins = 0;
+var textGroup2 = welcomePanel.add('group', undefined, { name: 'textGroup2' });
+textGroup2.orientation = 'row';
+textGroup2.alignChildren = ['left', 'bottom'];
+textGroup2.spacing = 10;
+textGroup2.margins = 0;
 
-var createWelcomeBtn = textGroup.add('button', undefined, undefined, {
-    name: 'createWelcomeBtn'
+var mascotNameGroup = textGroup2.add('group', undefined, {
+    name: 'mascotNameGroup'
 });
-createWelcomeBtn.text = 'Tạo text';
+mascotNameGroup.orientation = 'column';
+mascotNameGroup.alignChildren = ['left', 'center'];
 
+var mascotNameLabel = mascotNameGroup.add('statictext', undefined, undefined, {
+    name: 'mascotNameLabel'
+});
+mascotNameLabel.text = 'Tên linh vật';
+var mascotNameText = mascotNameGroup.add(
+    'edittext {properties: {name: "mascotNameText"}}'
+);
+mascotNameText.text = 'Sao la';
+mascotNameText.helpTip = 'Nhập tên linh vật';
+mascotNameText.preferredSize.width = 90;
+
+var languageGroup = textGroup2.add('group', undefined, {
+    name: 'languageGroup'
+});
+languageGroup.orientation = 'column';
+languageGroup.alignChildren = ['left', 'center'];
+
+var languageLabel = languageGroup.add('statictext', undefined, undefined, {
+    name: 'languageLabel'
+});
+languageLabel.text = 'Ngôn ngữ';
 // prettier-ignore
-var fontSizeDropDown_array = [24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,];
-var fontSizeDropDown = textGroup.add('dropdownlist', undefined, undefined, {
-    name: 'fontSizeDropDown',
-    items: fontSizeDropDown_array
+var languageDropDown_array = ['Tiếng việt','English'];
+var languageDropDown = languageGroup.add('dropdownlist', undefined, undefined, {
+    name: 'languageDropDown',
+    items: languageDropDown_array
 });
-fontSizeDropDown.selection = 0;
+languageDropDown.selection = 0;
 
+var fontFamilyGroup = textGroup2.add('group', undefined, {
+    name: 'fontFamilyGroup'
+});
+fontFamilyGroup.orientation = 'column';
+fontFamilyGroup.alignChildren = ['left', 'center'];
+
+var fontFamilyLabel = fontFamilyGroup.add('statictext', undefined, undefined, {
+    name: 'fontFamilyLabel'
+});
+fontFamilyLabel.text = 'Phông chữ';
 // prettier-ignore
 var fontFamilyDropDown_array = ["Arial","Bahnschrift","Bookman Old Style"
-,"Calibri","Cambria","Century","Consolas","Minion Pro","Tahoma"];
-var fontFamilyDropDown = textGroup.add('dropdownlist', undefined, undefined, {
-    name: 'fontFamilyDropDown',
-    items: fontFamilyDropDown_array
-});
+,"Calibri","Cambria","Century","Consolas","Minion Pro","Tahoma","Times New Roman"];
+var fontFamilyDropDown = fontFamilyGroup.add(
+    'dropdownlist',
+    undefined,
+    undefined,
+    {
+        name: 'fontFamilyDropDown',
+        items: fontFamilyDropDown_array
+    }
+);
 fontFamilyDropDown.helpTip = 'Chọn font chữ';
 fontFamilyDropDown.selection = 0;
 
-var textColor = textGroup.add('button', undefined, undefined, {
+var textColor = textGroup2.add('button', undefined, undefined, {
     name: 'textColor'
 });
 textColor.helpTip = 'Màu nền chữ';
@@ -237,9 +289,10 @@ textColor.fillBrush = textColor.graphics.newBrush(
 );
 textColor.onDraw = customDraw;
 
-var isSrokeCheckbox = textGroup.add('checkbox', undefined, undefined, {
+var isSrokeCheckbox = textGroup2.add('checkbox', undefined, undefined, {
     name: 'isSrokeCheckbox'
 });
+isSrokeCheckbox.value = true;
 
 isSrokeCheckbox.text = 'Viền';
 
@@ -253,11 +306,11 @@ finalGroup.alignChildren = ['left', 'center'];
 finalGroup.spacing = 10;
 finalGroup.margins = 10;
 
-var loadDataToComp = finalGroup.add('button', undefined, undefined, {
-    name: 'loadDataToComp'
+var loadDataToCompBtn = finalGroup.add('button', undefined, undefined, {
+    name: 'loadDataToCompBtnBtn'
 });
-loadDataToComp.text = 'Tải tài nguyên vào';
-loadDataToComp.helpTip =
+loadDataToCompBtn.text = 'Tải tài nguyên vào';
+loadDataToCompBtn.helpTip =
     'Tải các dữ liệu vào composition.\nThiết lập vị trí và chuyển động cho chúng';
 
 var renderBtn = finalGroup.add('button', undefined, undefined, {
@@ -273,9 +326,7 @@ mainPalette.show();
 compColor.onClick = function () {
     chooseColor('hexComp', compColor);
 };
-backgroundColor.onClick = function () {
-    chooseColor('hexBackground', backgroundColor);
-};
+
 textColor.onClick = function () {
     chooseColor('hexText', textColor);
 };
@@ -316,6 +367,40 @@ function updateButtonColour(button, rgbArray) {
     button.enabled = true;
 }
 
+function setTransform(layer, property, keyOpacity) {
+    for (var time in keyOpacity) {
+        layer.transform[property].setValueAtTime(time, keyOpacity[time]);
+    }
+}
+
+function findItemInFolder(folder, nameItem) {
+    if (!folder instanceof FolderItem) {
+        return -2;
+    }
+    for (var i = 1; i <= folder.numItems; i++) {
+        if (folder.item(i).name == nameItem) {
+            return folder.item(i);
+        }
+    }
+    return -1;
+}
+
+function findLayerInComp(myComp, nameLayer) {
+    for (var i = 1; i <= myComp.numLayers; i++) {
+        if (myComp.layer(i).name == nameLayer) {
+            return myComp.layer(i);
+        }
+    }
+    return -1;
+}
+
+function setLinearAnimation(property) {
+    for (var k = 1; k <= property.numKeys; k++) {
+        property.setInterpolationTypeAtKey(k, KeyframeInterpolationType.LINEAR);
+        property.setSpatialTangentsAtKey(k, [0, 0, 0], [0, 0, 0]);
+    }
+}
+
 // 1. Create Project
 createProjectBtn.onClick = function () {
     app.newProject();
@@ -343,55 +428,207 @@ createCompBtn.onClick = function () {
         30 // famerate
     );
     mainComp.bgColor = convertHextoRgb(colorHexObj.hexComp);
-};
-
-// 5. Add background
-createBackgroundColorBtn.onClick = function () {
     var solidLayer = mainComp.layers.addSolid(
-        convertHextoRgb(colorHexObj.hexBackground),
+        mainComp.bgColor,
         'backgroundLayer',
         1280,
         720,
         1
     );
+    mainComp.openInViewer();
 };
 
-// 6. Add tex
-createWelcomeBtn.onClick = function () {
-    var welcomeTextValue = welcomeText.text;
-    var colorTextValue = convertHextoRgb(colorHexObj.hexText);
-    var fontFamilyTextValue = fontFamilyDropDown.selection.text;
-    var fontSizeTextValue = fontSizeDropDown.selection.text;
-    var isStroke = isSrokeCheckbox.value;
+// 7. Load data to comp
+loadDataToCompBtn.onClick = function () {
+    var assetFolder = '';
+    for (var i = 1; i < app.project.numItems; i++) {
+        if (
+            app.project.item(i) instanceof FolderItem &&
+            app.project.item(i).name == nameComp.text
+        ) {
+            assetFolder = app.project.item(i);
+            break;
+        }
+    }
 
-    try {
-        var textLayer = mainComp.layers.addText();
-    } catch (error) {
-        alert('Bạn phải tạo composition trước');
+    if (assetFolder == '') {
+        alert(
+            'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition'
+        );
         return;
     }
-    var text_property = textLayer.sourceText;
-    var text_value = text_property.value;
-
-    text_value.resetCharStyle();
-    text_value.resetParagraphStyle();
-    text_value.text = welcomeTextValue;
-    text_value.fillColor = colorTextValue;
-    text_value.fontSize = fontSizeTextValue;
-    text_value.font = fontFamilyTextValue;
-    text_value.strokeColor = [0, 0, 0];
-    text_value.strokeWidth = 2;
-    text_value.applyStroke = isStroke;
-    text_property.setValue(text_value);
-    text_value.justification = ParagraphJustification.CENTER_JUSTIFY;
-    text_property.setValue(text_value);
-
-    textLayer.transform.opacity.setValueAtTime(0, 0);
-    textLayer.transform.opacity.setValueAtTime(1.9, 0);
-    textLayer.transform.opacity.setValueAtTime(2, 100);
-    textLayer.transform.opacity.setValueAtTime(9.9, 100);
-    textLayer.transform.opacity.setValueAtTime(10, 0);
-
-    // newTextWindow.hide();
-    // mainWindow.show();
+    loadIntro(assetFolder);
 };
+
+function loadIntro(assetFolder) {
+    var mainAsset = assetFolder.item(1);
+    var backgroundMusic = findItemInFolder(mainAsset, 'backgroundMusic.mp3');
+    var logo = findItemInFolder(mainAsset, 'logo.png');
+    var mascot = findItemInFolder(mainAsset, 'mascot.png');
+    var flag = findItemInFolder(mainAsset, 'flag.png');
+    //var backgroundMusicLayer = mainComp.layers.add(backgroundMusic);
+    var logoLayer = mainComp.layers.add(logo);
+    var mascotLayer = mainComp.layers.add(mascot);
+    var flagLayer = mainComp.layers.add(flag);
+
+    logoAnimation(logoLayer);
+    welcomeTextAnimation();
+    mascotAnimation(mascotLayer);
+    flagAnimation(flagLayer, mascotLayer);
+    sportTextAnimation();
+}
+
+function logoAnimation(logoLayer) {
+    //position
+    var keyPosition = {
+        2: [-220, 360],
+        3: [450, 360],
+        4: [550, 360],
+        5: [640, 360],
+        5.5: [120, 620]
+    };
+    setTransform(logoLayer, 'position', keyPosition);
+    setLinearAnimation(logoLayer.transform.position);
+    //opacity
+    var keyOpacity = {
+        5: 100,
+        5.5: 25
+    };
+    setTransform(logoLayer, 'opacity', keyOpacity);
+    //Scale
+    var keyScale = {
+        5: [100, 100],
+        5.5: [25, 25]
+    };
+    setTransform(logoLayer, 'scale', keyScale);
+}
+
+function welcomeTextAnimation() {
+    var language = languageObj[languageDropDown.selection.text];
+    var eventNameTextValue = eventNameText.text;
+    var hostNameTextValue = hostNameText.text;
+    var welcomeTextValue =
+        language[1] + eventNameTextValue + language[2] + hostNameTextValue;
+    var colorTextValue = convertHextoRgb(colorHexObj.hexText);
+    var fontFamilyTextValue = fontFamilyDropDown.selection.text;
+    var isStroke = isSrokeCheckbox.value;
+
+    var welcomeTextLayer = mainComp.layers.addText();
+    var welcomeTextLayerProperty = welcomeTextLayer.sourceText;
+    var welcomeTextLayerValue = welcomeTextLayerProperty.value;
+
+    welcomeTextLayerValue.resetCharStyle();
+    welcomeTextLayerValue.resetParagraphStyle();
+    welcomeTextLayerValue.text = welcomeTextValue;
+    welcomeTextLayerValue.fillColor = colorTextValue;
+    welcomeTextLayerValue.fontSize = 64;
+    welcomeTextLayerValue.font = fontFamilyTextValue;
+    welcomeTextLayerValue.strokeColor = [0, 0, 0];
+    welcomeTextLayerValue.strokeWidth = 1;
+    welcomeTextLayerValue.applyStroke = isStroke;
+    welcomeTextLayerProperty.setValue(welcomeTextLayerValue);
+    welcomeTextLayerValue.justification = ParagraphJustification.CENTER_JUSTIFY;
+    welcomeTextLayerProperty.setValue(welcomeTextLayerValue);
+
+    setTransform(welcomeTextLayer, 'position', {
+        1.5: [640, 360],
+        2.5: [640, 70]
+    });
+    setTransform(welcomeTextLayer, 'opacity', {
+        0: 0,
+        0.5: 100,
+        5: 99,
+        5.5: 0
+    });
+}
+
+function mascotAnimation(layer) {
+    //position
+    layer.transform.position.setValue([970, 400]);
+    setTransform(layer, 'position', { 7.8: [970, 400], 8.2: [1500, 400] });
+    setLinearAnimation(layer.transform.position);
+    //opacity
+    var keyOpacity = {
+        5.5: 0,
+        6: 100
+    };
+    setTransform(layer, 'opacity', keyOpacity);
+    //Scale
+    var keyScale = {
+        5.5: [0, 0],
+        6: [70, 70]
+    };
+    setTransform(layer, 'scale', keyScale);
+
+    //Name
+    var mascotNameTextLayer = mainComp.layers.addText();
+    var mascotNameLayerProperty = mascotNameTextLayer.sourceText;
+    var mascotNameLayerValue = mascotNameLayerProperty.value;
+
+    mascotNameLayerValue.resetCharStyle();
+    mascotNameLayerValue.resetParagraphStyle();
+    mascotNameLayerValue.text = mascotNameText.text;
+    mascotNameLayerValue.fillColor = convertHextoRgb(colorHexObj.hexText);
+    mascotNameLayerValue.fontSize = 48;
+    mascotNameLayerValue.font = fontFamilyDropDown.selection.text;
+    mascotNameLayerValue.isStroke = isSrokeCheckbox.value;
+    mascotNameLayerProperty.setValue(mascotNameLayerValue);
+    mascotNameLayerValue.justification = ParagraphJustification.CENTER_JUSTIFY;
+    mascotNameLayerProperty.setValue(mascotNameLayerValue);
+
+    mascotNameTextLayer.transform.position.setValue([990, 650]);
+    setTransform(mascotNameTextLayer, 'opacity', {
+        5.5: 0,
+        6: 100,
+        7.8: 99,
+        8.2: 0
+    });
+}
+function flagAnimation(layer, mascotLayer) {
+    //position
+    layer.transform.position.setValue([770, 360]);
+    setTransform(layer, 'position', {
+        6.2: [770, 360],
+        6.7: [470, 360],
+        7.8: [469, 360],
+        8.2: [-350, 360]
+    });
+    setLinearAnimation(layer.transform.position);
+    //opacity
+    var keyOpacity = {
+        6.2: 0,
+        6.7: 100
+    };
+    setTransform(layer, 'opacity', keyOpacity);
+    layer.moveAfter(mascotLayer);
+}
+
+function sportTextAnimation() {
+    var colorTextValue = convertHextoRgb(colorHexObj.hexText);
+    var fontFamilyTextValue = fontFamilyDropDown.selection.text;
+    var isStroke = isSrokeCheckbox.value;
+    var language = languageObj[languageDropDown.selection.text];
+    var sportTextLayer = mainComp.layers.addText();
+    var sportTextLayerProperty = sportTextLayer.sourceText;
+    var sportTextLayerValue = sportTextLayerProperty.value;
+
+    sportTextLayerValue.resetCharStyle();
+    sportTextLayerValue.resetParagraphStyle();
+    sportTextLayerValue.text = language[3];
+    sportTextLayerValue.fillColor = colorTextValue;
+    sportTextLayerValue.fontSize = 64;
+    sportTextLayerValue.font = fontFamilyTextValue;
+    sportTextLayerValue.strokeColor = [0, 0, 0];
+    sportTextLayerValue.strokeWidth = 1;
+    sportTextLayerValue.applyStroke = isStroke;
+    sportTextLayerProperty.setValue(sportTextLayerValue);
+    sportTextLayerValue.justification = ParagraphJustification.CENTER_JUSTIFY;
+    sportTextLayerProperty.setValue(sportTextLayerValue);
+
+    setTransform(sportTextLayer, 'opacity', {
+        8.2: 0,
+        8.5: 100,
+        9.2: 99,
+        9.5: 0
+    });
+}

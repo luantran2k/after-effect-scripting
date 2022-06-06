@@ -66,3 +66,14 @@
 // FileSystem.writeFile('data-place.json', JSON.stringify(place), (error) => {
 //     if (error) throw error;
 // });
+
+var languageObj = {
+    'Tiếng việt': {
+        1: 'Chào mừng bạn đến với ',
+        2: '\nđược tổ chức tại ',
+        3: 'Bao gồm các môn thi đấu sau'
+    },
+    English: {}
+};
+
+console.log(languageObj['Tiếng việt'][1]);
