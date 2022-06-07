@@ -319,6 +319,12 @@ finalGroup.alignChildren = ['left', 'center'];
 finalGroup.spacing = 10;
 finalGroup.margins = 10;
 
+var quickFillBtn = finalGroup.add('button', undefined, undefined, {
+    name: 'quickFillBtn'
+});
+quickFillBtn.text = 'Điền nhanh dữ liệu';
+quickFillBtn.helpTip =
+    'Dữ liệu sẽ được điền nhanh từ file data.json trong folder main-asset';
 var loadDataToCompBtn = finalGroup.add('button', undefined, undefined, {
     name: 'loadDataToCompBtnBtn'
 });
@@ -330,7 +336,6 @@ var renderBtn = finalGroup.add('button', undefined, undefined, {
     name: 'renderBtn'
 });
 renderBtn.text = 'Render';
-renderBtn.preferredSize.width = 130;
 renderBtn.helpTip = 'File sẽ được lưu cùng thư mục với file main.jsx';
 
 var immediatelyRenderCheckbox = finalGroup.add(
@@ -343,7 +348,7 @@ var immediatelyRenderCheckbox = finalGroup.add(
 );
 immediatelyRenderCheckbox.value = true;
 
-immediatelyRenderCheckbox.text = 'Render ngay lập tức';
+immediatelyRenderCheckbox.text = 'Render ngay';
 immediatelyRenderCheckbox.helpTip =
     'Bỏ tick để chọn định dạng và folder lưu trữ file render';
 
@@ -414,6 +419,14 @@ function findItemInFolder(folder, nameItem) {
     return -1;
 }
 
+function readJSONFile(file) {
+    file.open('r');
+    var data = file.read();
+    file.close();
+    data = JSON.parse(data);
+    return data;
+}
+
 function findLayerInComp(myComp, nameLayer) {
     for (var i = 1; i <= myComp.numLayers; i++) {
         if (myComp.layer(i).name == nameLayer) {
@@ -428,6 +441,20 @@ function setLinearAnimation(property) {
         property.setInterpolationTypeAtKey(k, KeyframeInterpolationType.LINEAR);
         property.setSpatialTangentsAtKey(k, [0, 0, 0], [0, 0, 0]);
     }
+}
+
+function findAssetFolder() {
+    for (var i = 1; i < app.project.numItems; i++) {
+        var assetFolder = '';
+        if (
+            app.project.item(i) instanceof FolderItem &&
+            app.project.item(i).name == nameComp.text
+        ) {
+            assetFolder = app.project.item(i);
+            break;
+        }
+    }
+    return assetFolder;
 }
 
 // 1. Create Project
@@ -481,19 +508,16 @@ createCompBtn.onClick = function () {
     mainComp.openInViewer();
 };
 
-function findAssetFolder() {
-    for (var i = 1; i < app.project.numItems; i++) {
-        var assetFolder = '';
-        if (
-            app.project.item(i) instanceof FolderItem &&
-            app.project.item(i).name == nameComp.text
-        ) {
-            assetFolder = app.project.item(i);
-            break;
-        }
-    }
-    return assetFolder;
-}
+// 5. Quick fill data
+quickFillBtn.onClick = function () {
+    var file = findItemInFolder(app.project, 'data.json');
+    var data = readJSONFile(File(file.file.fsName));
+    nameComp.text = data.compName;
+    eventNameText.text = data.eventName;
+    hostNameText.text = data.hostName;
+    mascotNameText.text = data.mascotName;
+    languageDropDown.selection = languageDropDown_array.indexOf(data.language);
+};
 
 // 7. Load data to comp
 loadDataToCompBtn.onClick = function () {
