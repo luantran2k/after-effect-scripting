@@ -5,6 +5,10 @@ var colorHexObj = {
     hexText: '0xF9F960'
 };
 
+var isStroke = true;
+var fontFamily = 'Calibri';
+var language = 'English';
+
 var languageObj = {
     'Tiếng việt': {
         1: 'Chào mừng bạn đến với ',
@@ -251,7 +255,12 @@ var languageDropDown = languageGroup.add('dropdownlist', undefined, undefined, {
     name: 'languageDropDown',
     items: languageDropDown_array
 });
-languageDropDown.selection = 0;
+var indexLanguage = languageDropDown_array.indexOf(language);
+if (indexLanguage != -1) {
+    languageDropDown.selection = indexLanguage;
+} else {
+    languageDropDown.selection = 0;
+}
 
 var fontFamilyGroup = textGroup2.add('group', undefined, {
     name: 'fontFamilyGroup'
@@ -276,7 +285,12 @@ var fontFamilyDropDown = fontFamilyGroup.add(
     }
 );
 fontFamilyDropDown.helpTip = 'Chọn font chữ';
-fontFamilyDropDown.selection = 0;
+var indexFontFamily = fontFamilyDropDown_array.indexOf(fontFamily);
+if (indexFontFamily != -1) {
+    fontFamilyDropDown.selection = indexFontFamily;
+} else {
+    fontFamilyDropDown.selection = 0;
+}
 
 var textColor = textGroup2.add('button', undefined, undefined, {
     name: 'textColor'
@@ -289,12 +303,12 @@ textColor.fillBrush = textColor.graphics.newBrush(
 );
 textColor.onDraw = customDraw;
 
-var isSrokeCheckbox = textGroup2.add('checkbox', undefined, undefined, {
-    name: 'isSrokeCheckbox'
+var isStrokeCheckbox = textGroup2.add('checkbox', undefined, undefined, {
+    name: 'isStrokeCheckbox'
 });
-isSrokeCheckbox.value = true;
+isStrokeCheckbox.value = isStroke;
 
-isSrokeCheckbox.text = 'Viền';
+isStrokeCheckbox.text = 'Viền';
 
 // FINALGROUP
 // ==========
@@ -424,7 +438,7 @@ createCompBtn.onClick = function () {
         1280,
         720,
         1,
-        60, // time
+        20 + findAssetFolder().item(2).numItems * (5 / 3),
         30 // famerate
     );
     mainComp.bgColor = convertHextoRgb(colorHexObj.hexComp);
@@ -438,10 +452,9 @@ createCompBtn.onClick = function () {
     mainComp.openInViewer();
 };
 
-// 7. Load data to comp
-loadDataToCompBtn.onClick = function () {
-    var assetFolder = '';
+function findAssetFolder() {
     for (var i = 1; i < app.project.numItems; i++) {
+        var assetFolder = '';
         if (
             app.project.item(i) instanceof FolderItem &&
             app.project.item(i).name == nameComp.text
@@ -450,7 +463,16 @@ loadDataToCompBtn.onClick = function () {
             break;
         }
     }
+    return assetFolder;
+}
 
+// 7. Load data to comp
+loadDataToCompBtn.onClick = function () {
+    isStroke = isStrokeCheckbox.value;
+    fontFamily = fontFamilyDropDown.selection.text;
+    language = languageObj[languageDropDown.selection.text];
+
+    var assetFolder = findAssetFolder();
     if (assetFolder == '') {
         alert(
             'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition'
@@ -459,27 +481,35 @@ loadDataToCompBtn.onClick = function () {
     }
     loadIntro(assetFolder);
     loadSport(assetFolder);
+    logoAnimation(assetFolder);
+    loadOutro();
+};
+
+// 8. Render
+renderBtn.onClick = function () {
+    app.project.renderQueue.items.add(mainComp);
+    app.project.renderQueue.render();
 };
 
 function loadIntro(assetFolder) {
-    var mainAsset = assetFolder.item(1);
+    var mainAsset = findAssetFolder().item(1);
     var backgroundMusic = findItemInFolder(mainAsset, 'backgroundMusic.mp3');
-    var logo = findItemInFolder(mainAsset, 'logo.png');
     var mascot = findItemInFolder(mainAsset, 'mascot.png');
     var flag = findItemInFolder(mainAsset, 'flag.png');
-    //var backgroundMusicLayer = mainComp.layers.add(backgroundMusic);
-    var logoLayer = mainComp.layers.add(logo);
+    var backgroundMusicLayer = mainComp.layers.add(backgroundMusic);
     var mascotLayer = mainComp.layers.add(mascot);
     var flagLayer = mainComp.layers.add(flag);
-
-    logoAnimation(logoLayer);
     welcomeTextAnimation();
     mascotAnimation(mascotLayer);
     flagAnimation(flagLayer, mascotLayer);
     sportTextAnimation();
 }
 
-function logoAnimation(logoLayer) {
+function logoAnimation(assetFolder) {
+    var mainAsset = assetFolder.item(1);
+    var logo = findItemInFolder(mainAsset, 'logo.png');
+    var logoLayer = mainComp.layers.add(logo);
+    var endSportsTime = 10 + findAssetFolder().item(2).numItems * (5 / 3);
     //position
     var keyPosition = {
         2: [-220, 360],
@@ -488,6 +518,8 @@ function logoAnimation(logoLayer) {
         5: [640, 360],
         5.5: [120, 620]
     };
+    keyPosition[endSportsTime] = [120, 620];
+    keyPosition[endSportsTime + 1.5] = [640, 360];
     setTransform(logoLayer, 'position', keyPosition);
     setLinearAnimation(logoLayer.transform.position);
     //opacity
@@ -495,24 +527,29 @@ function logoAnimation(logoLayer) {
         5: 100,
         5.5: 25
     };
+    keyOpacity[endSportsTime] = 25;
+    keyOpacity[endSportsTime + 1.5] = 100;
+    keyOpacity[endSportsTime + 3.5] = 100;
+    keyOpacity[endSportsTime + 5.5] = 0;
     setTransform(logoLayer, 'opacity', keyOpacity);
     //Scale
     var keyScale = {
         5: [100, 100],
         5.5: [25, 25]
     };
+    keyScale[endSportsTime] = [25, 25];
+    keyScale[endSportsTime + 1.5] = [100, 100];
+    keyScale[endSportsTime + 3.5] = [100, 100];
+    keyScale[endSportsTime + 5.5] = [300, 300];
     setTransform(logoLayer, 'scale', keyScale);
 }
 
 function welcomeTextAnimation() {
-    var language = languageObj[languageDropDown.selection.text];
     var eventNameTextValue = eventNameText.text;
     var hostNameTextValue = hostNameText.text;
     var welcomeTextValue =
         language[1] + eventNameTextValue + language[2] + hostNameTextValue;
     var colorTextValue = convertHextoRgb(colorHexObj.hexText);
-    var fontFamilyTextValue = fontFamilyDropDown.selection.text;
-    var isStroke = isSrokeCheckbox.value;
 
     var welcomeTextLayer = mainComp.layers.addText();
     var welcomeTextLayerProperty = welcomeTextLayer.sourceText;
@@ -523,7 +560,7 @@ function welcomeTextAnimation() {
     welcomeTextLayerValue.text = welcomeTextValue;
     welcomeTextLayerValue.fillColor = colorTextValue;
     welcomeTextLayerValue.fontSize = 64;
-    welcomeTextLayerValue.font = fontFamilyTextValue;
+    welcomeTextLayerValue.font = fontFamily;
     welcomeTextLayerValue.strokeColor = [0, 0, 0];
     welcomeTextLayerValue.strokeWidth = 1;
     welcomeTextLayerValue.applyStroke = isStroke;
@@ -541,6 +578,7 @@ function welcomeTextAnimation() {
         5: 99,
         5.5: 0
     });
+    welcomeTextLayer.outPoint = 10;
 }
 
 function mascotAnimation(layer) {
@@ -571,8 +609,8 @@ function mascotAnimation(layer) {
     mascotNameLayerValue.text = mascotNameText.text;
     mascotNameLayerValue.fillColor = convertHextoRgb(colorHexObj.hexText);
     mascotNameLayerValue.fontSize = 48;
-    mascotNameLayerValue.font = fontFamilyDropDown.selection.text;
-    mascotNameLayerValue.isStroke = isSrokeCheckbox.value;
+    mascotNameLayerValue.font = fontFamily;
+    mascotNameLayerValue.applyStroke = isStroke;
     mascotNameLayerProperty.setValue(mascotNameLayerValue);
     mascotNameLayerValue.justification = ParagraphJustification.CENTER_JUSTIFY;
     mascotNameLayerProperty.setValue(mascotNameLayerValue);
@@ -584,6 +622,8 @@ function mascotAnimation(layer) {
         7.8: 99,
         8.2: 0
     });
+    mascotNameTextLayer.outPoint = 10;
+    layer.outPoint = 10;
 }
 function flagAnimation(layer, mascotLayer) {
     //position
@@ -602,13 +642,11 @@ function flagAnimation(layer, mascotLayer) {
     };
     setTransform(layer, 'opacity', keyOpacity);
     layer.moveAfter(mascotLayer);
+    layer.outPoint = 10;
 }
 
 function sportTextAnimation() {
     var colorTextValue = convertHextoRgb(colorHexObj.hexText);
-    var fontFamilyTextValue = fontFamilyDropDown.selection.text;
-    var isStroke = isSrokeCheckbox.value;
-    var language = languageObj[languageDropDown.selection.text];
     var sportTextLayer = mainComp.layers.addText();
     var sportTextLayerProperty = sportTextLayer.sourceText;
     var sportTextLayerValue = sportTextLayerProperty.value;
@@ -618,7 +656,7 @@ function sportTextAnimation() {
     sportTextLayerValue.text = language[3];
     sportTextLayerValue.fillColor = colorTextValue;
     sportTextLayerValue.fontSize = 64;
-    sportTextLayerValue.font = fontFamilyTextValue;
+    sportTextLayerValue.font = fontFamily;
     sportTextLayerValue.strokeColor = [0, 0, 0];
     sportTextLayerValue.strokeWidth = 1;
     sportTextLayerValue.applyStroke = isStroke;
@@ -632,6 +670,7 @@ function sportTextAnimation() {
         9.2: 99,
         9.5: 0
     });
+    sportTextLayer.outPoint = 10;
 }
 
 function loadSport(assetFolder) {
@@ -647,6 +686,16 @@ function loadSport(assetFolder) {
         addSport(sportSlot3, start + 2, 3);
         start += 5;
     }
+    if (du == 2) {
+        var sportSlot1 = sportFolder.item(sportFolder.numItems - 1);
+        var sportSlot2 = sportFolder.item(sportFolder.numItems);
+        addSport(sportSlot1, start, 1);
+        addSport(sportSlot2, start + 1, 2);
+    }
+    if (du == 1) {
+        var sportSlot1 = sportFolder.item(sportFolder.numItems);
+        addSport(sportSlot1, start, 1);
+    }
 }
 
 function addSport(sport, start, slot) {
@@ -655,16 +704,22 @@ function addSport(sport, start, slot) {
     var sportNameLayer = mainComp.layers.addText();
     var sportNameLayerProperty = sportNameLayer.sourceText;
     var sportNameLayerValue = sportNameLayerProperty.value;
+    sportLayer.inPoint = start;
+    sportNameLayer.inPoint = start;
+    sportLayer.outPoint = sportLayer.inPoint + 3;
+    sportNameLayer.outPoint = sportNameLayer.inPoint + 3;
 
     sportNameLayerValue.resetCharStyle();
     sportNameLayerValue.resetParagraphStyle();
     sportNameLayerValue.text = nameSport;
     sportNameLayerValue.fillColor = convertHextoRgb(colorHexObj.hexText);
     sportNameLayerValue.fontSize = 48;
-    sportNameLayerValue.font = fontFamilyDropDown.selection.text;
+    sportNameLayerValue.font = fontFamily;
+    sportNameLayerValue.applyStroke = isStroke;
     sportNameLayerProperty.setValue(sportNameLayerValue);
-    sportNameLayerValue.isStroke = isSrokeCheckbox.value;
+    sportNameLayerValue.justification = ParagraphJustification.CENTER_JUSTIFY;
     sportNameLayerProperty.setValue(sportNameLayerValue);
+
     var keyOpacity = {};
     keyOpacity[start] = 0;
     keyOpacity[start + 0.5] = 100;
@@ -684,22 +739,24 @@ function addSport(sport, start, slot) {
     keyPosition3[start + 0.5] = [1060, 360];
     switch (slot) {
         case 1:
-            setTransform(sportNameLayer, 'position', { 0: [80, 650] });
+            setTransform(sportNameLayer, 'position', { 0: [220, 650] });
             setTransform(sportLayer, 'position', keyPosition1);
             setTransform(sportLayer, 'opacity', keyOpacity);
             setTransform(sportNameLayer, 'opacity', keyOpacity);
             break;
         case 2:
-            setTransform(sportNameLayer, 'position', { 0: [540, 650] });
+            setTransform(sportNameLayer, 'position', { 0: [640, 650] });
             setTransform(sportLayer, 'position', keyPosition2);
             setTransform(sportLayer, 'opacity', keyOpacity);
             setTransform(sportNameLayer, 'opacity', keyOpacity);
             break;
         case 3:
-            setTransform(sportNameLayer, 'position', { 0: [900, 650] });
+            setTransform(sportNameLayer, 'position', { 0: [1060, 650] });
             setTransform(sportLayer, 'position', keyPosition3);
             setTransform(sportLayer, 'opacity', keyOpacity);
             setTransform(sportNameLayer, 'opacity', keyOpacity);
             break;
     }
 }
+
+function loadOutro() {}
