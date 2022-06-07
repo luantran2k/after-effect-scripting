@@ -79,7 +79,7 @@ var assetBtn = assestPanel.add('button', undefined, undefined, {
     name: 'assetBtn'
 });
 assetBtn.helpTip = 'Folder tài nguyên chứa toàn bộ dữ liệu cần thiết';
-assetBtn.text = 'Chọn folder asset';
+assetBtn.text = 'Import folder asset';
 assetBtn.preferredSize.width = 140;
 
 // HELPGROUP
@@ -328,7 +328,7 @@ quickFillBtn.helpTip =
 var loadDataToCompBtn = finalGroup.add('button', undefined, undefined, {
     name: 'loadDataToCompBtnBtn'
 });
-loadDataToCompBtn.text = 'Tải tài nguyên vào';
+loadDataToCompBtn.text = 'Load asset ';
 loadDataToCompBtn.helpTip =
     'Tải các dữ liệu vào composition.\nThiết lập vị trí và chuyển động cho chúng';
 
@@ -356,7 +356,6 @@ mainPalette.show();
 
 //// Function
 
-// 0. Color Picker
 compColor.onClick = function () {
     chooseColor('hexComp', compColor);
 };
@@ -473,11 +472,137 @@ assetBtn.onClick = function () {
     assetFolder = app.project.importFileWithDialog();
 };
 
-// 4. Add composition
+// 4. Help
+helpBtn.onClick = function () {
+    // DIALOG
+    // ======
+    var dialog = new Window('dialog');
+    dialog.text = 'Help';
+    dialog.orientation = 'column';
+    dialog.alignChildren = ['left', 'top'];
+    dialog.spacing = 10;
+    dialog.margins = 16;
+
+    var statictext1 = dialog.add('statictext', undefined, undefined, {
+        name: 'statictext1'
+    });
+    statictext1.text =
+        'Hướng dẫn sử dụng script tạo video giới thiệu sự kiện thể thao';
+    statictext1.justify = 'center';
+    statictext1.alignment = ['center', 'top'];
+
+    var statictext2 = dialog.add('statictext', undefined, undefined, {
+        name: 'statictext2'
+    });
+    statictext2.text = 'Bước 1(Tùy chọn): Chọn tạo hoặc lưu project';
+
+    var statictext3 = dialog.add('statictext', undefined, undefined, {
+        name: 'statictext3'
+    });
+    statictext3.text =
+        'Bước 2: Chọn \u0022Import folder asset\u0022 và  import folder event trong thư mục asset. (VD: SeaGame31, Olympic2020).';
+
+    var statictext4 = dialog.add('group');
+    statictext4.orientation = 'column';
+    statictext4.alignChildren = ['left', 'center'];
+    statictext4.spacing = 0;
+
+    statictext4.add(
+        'statictext',
+        undefined,
+        'Bước 3(Tùy chọn): Có thế sử dụng nút \u0022Điền nhanh dữ liệu\u0022(Góc dưới trái mục 3) để đọc dữ liệu về tên sự kiện, tên',
+        { name: 'statictext4' }
+    );
+    statictext4.add(
+        'statictext',
+        undefined,
+        'linh vật, ... được lưu sẵn trong file \u0022data.json\u0022 trong mục main-asset',
+        { name: 'statictext4' }
+    );
+
+    var statictext5 = dialog.add('group');
+    statictext5.orientation = 'column';
+    statictext5.alignChildren = ['left', 'center'];
+    statictext5.spacing = 0;
+
+    statictext5.add(
+        'statictext',
+        undefined,
+        'Bước 4: Chọn chức năng \u0022Tạo composition\u0022 để tạo composition với các thông số đã thiết lập từ trước.(Có thể tùy',
+        { name: 'statictext5' }
+    );
+    statictext5.add(
+        'statictext',
+        undefined,
+        'chọn màu nền và có sử dụng hình nền hay không).',
+        { name: 'statictext5' }
+    );
+    statictext5.add(
+        'statictext',
+        undefined,
+        '*Lưu ý: Tên composition cần trùng với trên folder chứa asset sự  kiện. Vđ: Cùng tên là SeaGame31. Tên này còn được',
+        { name: 'statictext5' }
+    );
+    statictext5.add(
+        'statictext',
+        undefined,
+        'sử dụng làm tên video  khi xuất.',
+        { name: 'statictext5' }
+    );
+
+    var statictext6 = dialog.add('statictext', undefined, undefined, {
+        name: 'statictext6'
+    });
+    statictext6.text =
+        'Bước 5: Chọn \u0022Load asset\u0022 để load hết các dữ liệu cần thiết vào và tạo chuyển động cho chúng.';
+
+    var statictext7 = dialog.add('group');
+    statictext7.orientation = 'column';
+    statictext7.alignChildren = ['left', 'center'];
+    statictext7.spacing = 0;
+
+    statictext7.add(
+        'statictext',
+        undefined,
+        'Bước  6: Ấn nút render để xuất video, có thể tùy chỉnh định dạng video và nơi xuất bằng việc bỏ tích \u0022Render ngay\u0022.',
+        { name: 'statictext7' }
+    );
+    statictext7.add(
+        'statictext',
+        undefined,
+        'Mặc định video sẽ được xuất ra cùng thư mục chứa file main.jsx',
+        { name: 'statictext7' }
+    );
+
+    var statictext8 = dialog.add('group');
+    statictext8.orientation = 'column';
+    statictext8.alignChildren = ['left', 'center'];
+    statictext8.spacing = 0;
+
+    statictext8.add('statictext', undefined, '*Một số lưu ý khác.', {
+        name: 'statictext8'
+    });
+    statictext8.add(
+        'statictext',
+        undefined,
+        '**Tên của ảnh của môn thể thao sẽ là tên của môn thể thao đó.',
+        { name: 'statictext8' }
+    );
+    statictext8.add(
+        'statictext',
+        undefined,
+        '**Các ảnh cần có định dạng \u0022.png\u0022.',
+        { name: 'statictext8' }
+    );
+
+    dialog.show();
+};
+
+// 5. Add composition
 createCompBtn.onClick = function () {
     if (!findAssetFolder()) {
         alert(
-            'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition'
+            'Asset chưa được chọn hoặc sai tên.\nTên composition phải trùng với tên folder Asset\nHãy thủ chọn chức năng điền thông tin nhanh ở dưới.'
         );
         return;
     }
@@ -508,15 +633,21 @@ createCompBtn.onClick = function () {
     mainComp.openInViewer();
 };
 
-// 5. Quick fill data
+// 6. Quick fill data
 quickFillBtn.onClick = function () {
-    var file = findItemInFolder(app.project, 'data.json');
-    var data = readJSONFile(File(file.file.fsName));
-    nameComp.text = data.compName;
-    eventNameText.text = data.eventName;
-    hostNameText.text = data.hostName;
-    mascotNameText.text = data.mascotName;
-    languageDropDown.selection = languageDropDown_array.indexOf(data.language);
+    try {
+        var file = findItemInFolder(app.project, 'data.json');
+        var data = readJSONFile(File(file.file.fsName));
+        nameComp.text = data.compName;
+        eventNameText.text = data.eventName;
+        hostNameText.text = data.hostName;
+        mascotNameText.text = data.mascotName;
+        languageDropDown.selection = languageDropDown_array.indexOf(
+            data.language
+        );
+    } catch (e) {
+        alert('Hãy import asset và kiểm tra file data.json');
+    }
 };
 
 // 7. Load data to comp
@@ -529,7 +660,7 @@ loadDataToCompBtn.onClick = function () {
         assetFolder = findAssetFolder();
         if (assetFolder == '') {
             alert(
-                'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition'
+                'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition\n'
             );
             return;
         }
@@ -538,7 +669,7 @@ loadDataToCompBtn.onClick = function () {
         logoAnimation(assetFolder);
         loadOutro();
     } catch (e) {
-        alert('Cần phải tạo composition trước');
+        alert('Lỗi, thử xóa composition hiện tại và load lại');
     }
 };
 
@@ -552,7 +683,7 @@ renderBtn.onClick = function () {
         outputModule.file = File(outputFolder + '/' + comp.name); //outputFolder + '/' +
         app.project.renderQueue.queueInAME(immediatelyRenderCheckbox.value);
     } catch (e) {
-        alert('Cần phải tạo composition trước');
+        alert('Lỗi, thử xóa composition hiện tại và tạo lại');
     }
 };
 
@@ -856,4 +987,29 @@ function loadOutro() {
     keyOpacityName[start + 2] = 100;
     setTransform(nameTextLayer, 'opacity', keyOpacityName);
     nameTextLayer.inPoint = start;
+
+    //Line
+    var lineLayer = mainComp.layers.addShape();
+    var lineContent = lineLayer.property('ADBE Root Vectors Group');
+    var lineGroup = lineContent.addProperty('ADBE Vector Group');
+    lineLayer.name = 'Line';
+    var line = lineGroup
+        .property('ADBE Vectors Group')
+        .addProperty('ADBE Vector Shape - Rect');
+    line.property('ADBE Vector Rect Size').setValue([1000, 10]);
+    var lineFill = lineGroup
+        .property('ADBE Vectors Group')
+        .addProperty('ADBE Vector Graphic - Fill');
+    lineFill
+        .property('ADBE Vector Fill Color')
+        .setValue([50 / 255, 168 / 255, 74 / 255]);
+
+    lineLayer.inPoint = start + 2;
+    lineLayer.property('Position').setValue([640, 380]);
+    var lineScale = lineLayer.property('Scale');
+    lineScale.setValueAtTime(start + 2.5, [0, 100]);
+    lineScale.setValueAtTime(start + 3.5, [75, 100]);
+    var lineOpacity = lineLayer.property('Opacity');
+    lineOpacity.setValueAtTime(start + 2.5, 0);
+    lineOpacity.setValueAtTime(start + 3.5, 100);
 }
