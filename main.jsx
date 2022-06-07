@@ -7,10 +7,12 @@ var colorHexObj = {
 
 var isStroke = true;
 var fontFamily = 'Calibri';
-var language = 'English';
+var language = 'Tiếng Việt';
+var start = 9.8;
+var assetFolder = '';
 
 var languageObj = {
-    'Tiếng việt': {
+    'Tiếng Việt': {
         1: 'Chào mừng bạn đến với ',
         2: '\nđược tổ chức tại ',
         3: 'Bao gồm các môn thi đấu sau'
@@ -157,6 +159,13 @@ compColor.fillBrush = compColor.graphics.newBrush(
 );
 compColor.onDraw = customDraw;
 
+var useBackgroundImg = compElement.add('checkbox', undefined, undefined, {
+    name: 'useBackgroundImg'
+});
+useBackgroundImg.value = true;
+
+useBackgroundImg.text = 'Dùng background';
+
 // WELCOMEPANEL
 // ============
 var welcomePanel = implementationPanel.add('panel', undefined, undefined, {
@@ -250,17 +259,12 @@ var languageLabel = languageGroup.add('statictext', undefined, undefined, {
 });
 languageLabel.text = 'Ngôn ngữ';
 // prettier-ignore
-var languageDropDown_array = ['Tiếng việt','English'];
+var languageDropDown_array = ['Tiếng Việt','English'];
 var languageDropDown = languageGroup.add('dropdownlist', undefined, undefined, {
     name: 'languageDropDown',
     items: languageDropDown_array
 });
-var indexLanguage = languageDropDown_array.indexOf(language);
-if (indexLanguage != -1) {
-    languageDropDown.selection = indexLanguage;
-} else {
-    languageDropDown.selection = 0;
-}
+languageDropDown.selection = 0;
 
 var fontFamilyGroup = textGroup2.add('group', undefined, {
     name: 'fontFamilyGroup'
@@ -285,12 +289,7 @@ var fontFamilyDropDown = fontFamilyGroup.add(
     }
 );
 fontFamilyDropDown.helpTip = 'Chọn font chữ';
-var indexFontFamily = fontFamilyDropDown_array.indexOf(fontFamily);
-if (indexFontFamily != -1) {
-    fontFamilyDropDown.selection = indexFontFamily;
-} else {
-    fontFamilyDropDown.selection = 0;
-}
+fontFamilyDropDown.selection = 3;
 
 var textColor = textGroup2.add('button', undefined, undefined, {
     name: 'textColor'
@@ -332,6 +331,22 @@ var renderBtn = finalGroup.add('button', undefined, undefined, {
 });
 renderBtn.text = 'Render';
 renderBtn.preferredSize.width = 130;
+renderBtn.helpTip = 'File sẽ được lưu cùng thư mục với file main.jsx';
+
+var immediatelyRenderCheckbox = finalGroup.add(
+    'checkbox',
+    undefined,
+    undefined,
+    {
+        name: 'immediatelyRenderCheckbox'
+    }
+);
+immediatelyRenderCheckbox.value = true;
+
+immediatelyRenderCheckbox.text = 'Render ngay lập tức';
+immediatelyRenderCheckbox.helpTip =
+    'Bỏ tick để chọn định dạng và folder lưu trữ file render';
+
 mainPalette.show();
 
 //// Function
@@ -428,17 +443,23 @@ saveProjectBtn.onClick = function () {
 
 // 3. Add asset to project
 assetBtn.onClick = function () {
-    var backgroundMusic = app.project.importFileWithDialog();
+    assetFolder = app.project.importFileWithDialog();
 };
 
 // 4. Add composition
 createCompBtn.onClick = function () {
+    if (!findAssetFolder()) {
+        alert(
+            'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition'
+        );
+        return;
+    }
     mainComp = app.project.items.addComp(
         nameComp.text,
         1280,
         720,
         1,
-        20 + findAssetFolder().item(2).numItems * (5 / 3),
+        25 + findAssetFolder().item(2).numItems * (5 / 3),
         30 // famerate
     );
     mainComp.bgColor = convertHextoRgb(colorHexObj.hexComp);
@@ -449,6 +470,14 @@ createCompBtn.onClick = function () {
         720,
         1
     );
+    if (useBackgroundImg.value) {
+        var backgroundImg = findItemInFolder(
+            findAssetFolder().item(1),
+            'backgroundImg.png'
+        );
+        var backgroundImgLayer = mainComp.layers.add(backgroundImg);
+    }
+
     mainComp.openInViewer();
 };
 
@@ -468,27 +497,39 @@ function findAssetFolder() {
 
 // 7. Load data to comp
 loadDataToCompBtn.onClick = function () {
-    isStroke = isStrokeCheckbox.value;
-    fontFamily = fontFamilyDropDown.selection.text;
-    language = languageObj[languageDropDown.selection.text];
+    try {
+        isStroke = isStrokeCheckbox.value;
+        fontFamily = fontFamilyDropDown.selection.text;
+        language = languageObj[languageDropDown.selection.text];
 
-    var assetFolder = findAssetFolder();
-    if (assetFolder == '') {
-        alert(
-            'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition'
-        );
-        return;
+        assetFolder = findAssetFolder();
+        if (assetFolder == '') {
+            alert(
+                'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition'
+            );
+            return;
+        }
+        loadIntro(assetFolder);
+        loadSport(assetFolder);
+        logoAnimation(assetFolder);
+        loadOutro();
+    } catch (e) {
+        alert('Cần phải tạo composition trước');
     }
-    loadIntro(assetFolder);
-    loadSport(assetFolder);
-    logoAnimation(assetFolder);
-    loadOutro();
 };
 
 // 8. Render
 renderBtn.onClick = function () {
-    app.project.renderQueue.items.add(mainComp);
-    app.project.renderQueue.render();
+    try {
+        var comp = app.project.activeItem;
+        var item = app.project.renderQueue.items.add(comp);
+        var outputModule = item.outputModule(1);
+        var outputFolder = File($.fileName).path;
+        outputModule.file = File(outputFolder + '/' + comp.name); //outputFolder + '/' +
+        app.project.renderQueue.queueInAME(immediatelyRenderCheckbox.value);
+    } catch (e) {
+        alert('Cần phải tạo composition trước');
+    }
 };
 
 function loadIntro(assetFolder) {
@@ -676,7 +717,6 @@ function sportTextAnimation() {
 function loadSport(assetFolder) {
     var sportFolder = assetFolder.item(2);
     var du = sportFolder.numItems % 3;
-    var start = 9.8;
     for (var i = 1; i <= sportFolder.numItems - du; i += 3) {
         var sportSlot1 = sportFolder.item(i);
         var sportSlot2 = sportFolder.item(i + 1);
@@ -691,10 +731,12 @@ function loadSport(assetFolder) {
         var sportSlot2 = sportFolder.item(sportFolder.numItems);
         addSport(sportSlot1, start, 1);
         addSport(sportSlot2, start + 1, 2);
+        start += 10 / 3;
     }
     if (du == 1) {
         var sportSlot1 = sportFolder.item(sportFolder.numItems);
         addSport(sportSlot1, start, 1);
+        start += 5 / 3;
     }
 }
 
@@ -759,4 +801,35 @@ function addSport(sport, start, slot) {
     }
 }
 
-function loadOutro() {}
+function loadOutro() {
+    start = start + 6; // End logo zoom time
+    // prettier-ignore
+    var blackBackground = mainComp.layers.addSolid([0, 0, 0], "blackBackground", 1280, 720, 1.0);
+
+    var keyOpacityBg = {};
+    keyOpacityBg[start] = 0;
+    keyOpacityBg[start + 1.5] = 100;
+    setTransform(blackBackground, 'opacity', keyOpacityBg);
+    blackBackground.inPoint = start;
+
+    //Name
+    var nameTextLayer = mainComp.layers.addText();
+    var nameTextLayerProperty = nameTextLayer.sourceText;
+    var nameTextLayerValue = nameTextLayerProperty.value;
+
+    nameTextLayerValue.resetCharStyle();
+    nameTextLayerValue.resetParagraphStyle();
+    nameTextLayerValue.text = 'Trần Văn Luân - B18DCPT151';
+    nameTextLayerValue.fillColor = [1, 1, 1];
+    nameTextLayerValue.fontSize = 64;
+    nameTextLayerValue.font = fontFamily;
+    nameTextLayerProperty.setValue(nameTextLayerValue);
+    nameTextLayerValue.justification = ParagraphJustification.CENTER_JUSTIFY;
+    nameTextLayerProperty.setValue(nameTextLayerValue);
+
+    var keyOpacityName = {};
+    keyOpacityName[start + 1.5] = 0;
+    keyOpacityName[start + 2] = 100;
+    setTransform(nameTextLayer, 'opacity', keyOpacityName);
+    nameTextLayer.inPoint = start;
+}
