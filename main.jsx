@@ -24,6 +24,8 @@ var languageObj = {
     }
 };
 var mainComp;
+var hasAsset = false;
+var hasComp = false;
 // MAINPALETTE
 // ===========
 var mainPalette = new Window('palette');
@@ -629,62 +631,48 @@ createCompBtn.onClick = function () {
         );
         var backgroundImgLayer = mainComp.layers.add(backgroundImg);
     }
-
     mainComp.openInViewer();
+    hasComp = true;
 };
 
 // 6. Quick fill data
 quickFillBtn.onClick = function () {
-    try {
-        var file = findItemInFolder(app.project, 'data.json');
-        var data = readJSONFile(File(file.file.fsName));
-        nameComp.text = data.compName;
-        eventNameText.text = data.eventName;
-        hostNameText.text = data.hostName;
-        mascotNameText.text = data.mascotName;
-        languageDropDown.selection = languageDropDown_array.indexOf(
-            data.language
-        );
-    } catch (e) {
-        alert('Hãy import asset và kiểm tra file data.json');
-    }
+    var file = findItemInFolder(app.project, 'data.json');
+    var data = readJSONFile(File(file.file.fsName));
+    nameComp.text = data.compName;
+    eventNameText.text = data.eventName;
+    hostNameText.text = data.hostName;
+    mascotNameText.text = data.mascotName;
+    languageDropDown.selection = languageDropDown_array.indexOf(data.language);
 };
 
 // 7. Load data to comp
 loadDataToCompBtn.onClick = function () {
-    try {
-        isStroke = isStrokeCheckbox.value;
-        fontFamily = fontFamilyDropDown.selection.text;
-        language = languageObj[languageDropDown.selection.text];
+    isStroke = isStrokeCheckbox.value;
+    fontFamily = fontFamilyDropDown.selection.text;
+    language = languageObj[languageDropDown.selection.text];
 
-        assetFolder = findAssetFolder();
-        if (assetFolder == '') {
-            alert(
-                'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition\n'
-            );
-            return;
-        }
-        loadIntro(assetFolder);
-        loadSport(assetFolder);
-        logoAnimation(assetFolder);
-        loadOutro();
-    } catch (e) {
-        alert('Lỗi, thử xóa composition hiện tại và load lại');
+    assetFolder = findAssetFolder();
+    if (assetFolder == '') {
+        alert(
+            'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition\n'
+        );
+        return;
     }
+    loadIntro(assetFolder);
+    loadSport(assetFolder);
+    logoAnimation(assetFolder);
+    loadOutro();
 };
 
 // 8. Render
 renderBtn.onClick = function () {
-    try {
-        var comp = app.project.activeItem;
-        var item = app.project.renderQueue.items.add(comp);
-        var outputModule = item.outputModule(1);
-        var outputFolder = File($.fileName).path;
-        outputModule.file = File(outputFolder + '/' + comp.name); //outputFolder + '/' +
-        app.project.renderQueue.queueInAME(immediatelyRenderCheckbox.value);
-    } catch (e) {
-        alert('Lỗi, thử xóa composition hiện tại và tạo lại');
-    }
+    var comp = app.project.activeItem;
+    var item = app.project.renderQueue.items.add(comp);
+    var outputModule = item.outputModule(1);
+    var outputFolder = File($.fileName).path;
+    outputModule.file = File(outputFolder + '/' + comp.name); //outputFolder + '/' +
+    app.project.renderQueue.queueInAME(immediatelyRenderCheckbox.value);
 };
 
 function loadIntro(assetFolder) {
@@ -870,7 +858,7 @@ function sportTextAnimation() {
 }
 
 function loadSport(assetFolder) {
-    var sportFolder = assetFolder.item(2);
+    var sportFolder = findAssetFolder().item(2);
     var du = sportFolder.numItems % 3;
     for (var i = 1; i <= sportFolder.numItems - du; i += 3) {
         var sportSlot1 = sportFolder.item(i);
