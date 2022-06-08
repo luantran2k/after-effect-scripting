@@ -1,4 +1,5 @@
-﻿var defaultHexColor = '0xF96163';
+﻿var mainComp = undefined;
+var defaultHexColor = '0xF96163';
 var colorHexObj = {
     hexComp: defaultHexColor,
     hexBackground: defaultHexColor,
@@ -23,9 +24,8 @@ var languageObj = {
         3: 'With sports'
     }
 };
-var mainComp;
-var hasAsset = false;
-var hasComp = false;
+var sportFolder = -1;
+var mainAssetFolder = -1;
 // MAINPALETTE
 // ===========
 var mainPalette = new Window('palette');
@@ -321,12 +321,6 @@ finalGroup.alignChildren = ['left', 'center'];
 finalGroup.spacing = 10;
 finalGroup.margins = 10;
 
-var quickFillBtn = finalGroup.add('button', undefined, undefined, {
-    name: 'quickFillBtn'
-});
-quickFillBtn.text = 'Điền nhanh dữ liệu';
-quickFillBtn.helpTip =
-    'Dữ liệu sẽ được điền nhanh từ file data.json trong folder main-asset';
 var loadDataToCompBtn = finalGroup.add('button', undefined, undefined, {
     name: 'loadDataToCompBtnBtn'
 });
@@ -338,21 +332,22 @@ var renderBtn = finalGroup.add('button', undefined, undefined, {
     name: 'renderBtn'
 });
 renderBtn.text = 'Render';
-renderBtn.helpTip = 'File sẽ được lưu cùng thư mục với file main.jsx';
 
-var immediatelyRenderCheckbox = finalGroup.add(
-    'checkbox',
-    undefined,
-    undefined,
-    {
-        name: 'immediatelyRenderCheckbox'
-    }
-);
-immediatelyRenderCheckbox.value = true;
+var useMediaEncoderCheckbox = finalGroup.add('checkbox', undefined, undefined, {
+    name: 'useMediaEncoderCheckbox'
+});
+useMediaEncoderCheckbox.value = false;
 
-immediatelyRenderCheckbox.text = 'Render ngay';
-immediatelyRenderCheckbox.helpTip =
-    'Bỏ tick để chọn định dạng và folder lưu trữ file render';
+useMediaEncoderCheckbox.text = 'Render qua Media Encoder';
+useMediaEncoderCheckbox.helpTip = 'Bỏ tick để render qua render queue';
+
+var renderPath_array = ['Destop', 'Cùng file main'];
+var renderPathDropDown = finalGroup.add('dropdownlist', undefined, undefined, {
+    name: 'renderPath',
+    items: renderPath_array
+});
+renderPathDropDown.selection = 0;
+renderPathDropDown.helpTip = 'Địa điểm lưu file sau khi xuất';
 
 mainPalette.show();
 
@@ -410,7 +405,7 @@ function setTransform(layer, property, keyOpacity) {
 
 function findItemInFolder(folder, nameItem) {
     if (!folder instanceof FolderItem) {
-        return -2;
+        return -1;
     }
     for (var i = 1; i <= folder.numItems; i++) {
         if (folder.item(i).name == nameItem) {
@@ -458,6 +453,33 @@ function findAssetFolder() {
     return assetFolder;
 }
 
+function findFolderByName(nameFolder) {
+    for (var i = 1; i <= app.project.numItems; i++) {
+        if (
+            app.project.item(i).name == nameFolder &&
+            app.project.item(i) instanceof FolderItem
+        ) {
+            return app.project.item(i);
+        }
+    }
+    return -1;
+}
+
+function getFolderPath(folder) {
+    var fileObj = new File(folder.item(1).file.fsName);
+    var path = fileObj.parent.fsName;
+    return path;
+}
+
+function quickFillData(path) {
+    var data = readJSONFile(File(path));
+    nameComp.text = data.compName;
+    eventNameText.text = data.eventName;
+    hostNameText.text = data.hostName;
+    mascotNameText.text = data.mascotName;
+    languageDropDown.selection = languageDropDown_array.indexOf(data.language);
+}
+
 // 1. Create Project
 createProjectBtn.onClick = function () {
     app.newProject();
@@ -472,6 +494,15 @@ saveProjectBtn.onClick = function () {
 // 3. Add asset to project
 assetBtn.onClick = function () {
     assetFolder = app.project.importFileWithDialog();
+    sportFolder = findFolderByName('sports');
+    mainAssetFolder = findFolderByName('main-asset');
+    mainAssetFolderPath = getFolderPath(mainAssetFolder);
+    var dataPath = mainAssetFolderPath + '\\' + 'data.json';
+    try {
+        quickFillData(dataPath);
+    } catch (e) {
+        alert('Tự động điền không hỗ trợ trên phiên bản này');
+    }
 };
 
 // 4. Help
@@ -512,89 +543,93 @@ helpBtn.onClick = function () {
     statictext4.add(
         'statictext',
         undefined,
-        'Bước 3(Tùy chọn): Có thế sử dụng nút \u0022Điền nhanh dữ liệu\u0022(Góc dưới trái mục 3) để đọc dữ liệu về tên sự kiện, tên',
+        'Bước 3: Chọn chức năng \u0022Tạo composition\u0022 để tạo composition với các thông số đã thiết lập từ trước.(Có thể tùy',
         { name: 'statictext4' }
     );
     statictext4.add(
         'statictext',
         undefined,
-        'linh vật, ... được lưu sẵn trong file \u0022data.json\u0022 trong mục main-asset',
+        'chọn màu nền và có sử dụng hình nền hay không).',
+        { name: 'statictext4' }
+    );
+    statictext4.add(
+        'statictext',
+        undefined,
+        '*Lưu ý: Tên composition  được sử dụng làm tên video  khi xuất.',
         { name: 'statictext4' }
     );
 
-    var statictext5 = dialog.add('group');
-    statictext5.orientation = 'column';
-    statictext5.alignChildren = ['left', 'center'];
-    statictext5.spacing = 0;
-
-    statictext5.add(
-        'statictext',
-        undefined,
-        'Bước 4: Chọn chức năng \u0022Tạo composition\u0022 để tạo composition với các thông số đã thiết lập từ trước.(Có thể tùy',
-        { name: 'statictext5' }
-    );
-    statictext5.add(
-        'statictext',
-        undefined,
-        'chọn màu nền và có sử dụng hình nền hay không).',
-        { name: 'statictext5' }
-    );
-    statictext5.add(
-        'statictext',
-        undefined,
-        '*Lưu ý: Tên composition cần trùng với trên folder chứa asset sự  kiện. Vđ: Cùng tên là SeaGame31. Tên này còn được',
-        { name: 'statictext5' }
-    );
-    statictext5.add(
-        'statictext',
-        undefined,
-        'sử dụng làm tên video  khi xuất.',
-        { name: 'statictext5' }
-    );
-
-    var statictext6 = dialog.add('statictext', undefined, undefined, {
-        name: 'statictext6'
+    var statictext5 = dialog.add('statictext', undefined, undefined, {
+        name: 'statictext5'
     });
-    statictext6.text =
-        'Bước 5: Chọn \u0022Load asset\u0022 để load hết các dữ liệu cần thiết vào và tạo chuyển động cho chúng.';
+    statictext5.text =
+        'Bước 4: Chọn \u0022Load asset\u0022 để load hết các dữ liệu cần thiết vào Composition và tạo chuyển động cho chúng.';
+
+    var statictext6 = dialog.add('group');
+    statictext6.orientation = 'column';
+    statictext6.alignChildren = ['left', 'center'];
+    statictext6.spacing = 0;
+
+    statictext6.add(
+        'statictext',
+        undefined,
+        'Bước  5: Ấn nút render để xuất video, có thể tùy chỉnh  cách xuất video bằng render queue hoặc Media Encoder cũng',
+        { name: 'statictext6' }
+    );
+    statictext6.add(
+        'statictext',
+        undefined,
+        'như vị trí lưu file trên desktop hay cùng vị trí với file main.jsx',
+        { name: 'statictext6' }
+    );
 
     var statictext7 = dialog.add('group');
     statictext7.orientation = 'column';
     statictext7.alignChildren = ['left', 'center'];
     statictext7.spacing = 0;
 
-    statictext7.add(
-        'statictext',
-        undefined,
-        'Bước  6: Ấn nút render để xuất video, có thể tùy chỉnh định dạng video và nơi xuất bằng việc bỏ tích \u0022Render ngay\u0022.',
-        { name: 'statictext7' }
-    );
-    statictext7.add(
-        'statictext',
-        undefined,
-        'Mặc định video sẽ được xuất ra cùng thư mục chứa file main.jsx',
-        { name: 'statictext7' }
-    );
-
-    var statictext8 = dialog.add('group');
-    statictext8.orientation = 'column';
-    statictext8.alignChildren = ['left', 'center'];
-    statictext8.spacing = 0;
-
-    statictext8.add('statictext', undefined, '*Một số lưu ý khác.', {
-        name: 'statictext8'
+    statictext7.add('statictext', undefined, '', { name: 'statictext7' });
+    statictext7.add('statictext', undefined, '*Một số lưu ý khác.', {
+        name: 'statictext7'
     });
-    statictext8.add(
+    statictext7.add(
+        'statictext',
+        undefined,
+        '**Chức năng tự động điền các trường thông tin theo asset không khả dụng trên bản CS6 và thấp hơn.',
+        { name: 'statictext7' }
+    );
+    statictext7.add(
+        'statictext',
+        undefined,
+        '**Render queue của các bản Affter Effect gần đây không hỗ trợ định dạng H264. Có thể xuất bằng Media Encoder để',
+        { name: 'statictext7' }
+    );
+    statictext7.add('statictext', undefined, 'thay thế.', {
+        name: 'statictext7'
+    });
+    statictext7.add(
+        'statictext',
+        undefined,
+        '**Ưu tiên sử dụng render queue(CS6) và Media Endcoder (các bản CC).',
+        { name: 'statictext7' }
+    );
+    statictext7.add(
+        'statictext',
+        undefined,
+        '**Không thể nhập/render ra các folder/tệp có đường dẫn chứa tiếng Việt trên bản CS6 và thấp hơn.',
+        { name: 'statictext7' }
+    );
+    statictext7.add(
         'statictext',
         undefined,
         '**Tên của ảnh của môn thể thao sẽ là tên của môn thể thao đó.',
-        { name: 'statictext8' }
+        { name: 'statictext7' }
     );
-    statictext8.add(
+    statictext7.add(
         'statictext',
         undefined,
         '**Các ảnh cần có định dạng \u0022.png\u0022.',
-        { name: 'statictext8' }
+        { name: 'statictext7' }
     );
 
     dialog.show();
@@ -602,9 +637,12 @@ helpBtn.onClick = function () {
 
 // 5. Add composition
 createCompBtn.onClick = function () {
-    if (!findAssetFolder()) {
+    if (
+        findFolderByName('sports') == -1 ||
+        findFolderByName('main-asset') == -1
+    ) {
         alert(
-            'Asset chưa được chọn hoặc sai tên.\nTên composition phải trùng với tên folder Asset\nHãy thủ chọn chức năng điền thông tin nhanh ở dưới.'
+            'Chưa nhập asset hoặc asset bị lỗi, vui lòng kiểm tra hoặc thử import lại'
         );
         return;
     }
@@ -613,7 +651,7 @@ createCompBtn.onClick = function () {
         1280,
         720,
         1,
-        25 + findAssetFolder().item(2).numItems * (5 / 3),
+        25 + findFolderByName('sports').numItems * (5 / 3),
         30 // famerate
     );
     mainComp.bgColor = convertHextoRgb(colorHexObj.hexComp);
@@ -626,60 +664,68 @@ createCompBtn.onClick = function () {
     );
     if (useBackgroundImg.value) {
         var backgroundImg = findItemInFolder(
-            findAssetFolder().item(1),
+            findFolderByName('main-asset'),
             'backgroundImg.png'
         );
         var backgroundImgLayer = mainComp.layers.add(backgroundImg);
     }
     mainComp.openInViewer();
-    hasComp = true;
 };
 
-// 6. Quick fill data
-quickFillBtn.onClick = function () {
-    var file = findItemInFolder(app.project, 'data.json');
-    var data = readJSONFile(File(file.file.fsName));
-    nameComp.text = data.compName;
-    eventNameText.text = data.eventName;
-    hostNameText.text = data.hostName;
-    mascotNameText.text = data.mascotName;
-    languageDropDown.selection = languageDropDown_array.indexOf(data.language);
-};
-
-// 7. Load data to comp
+// 6. Load data to comp
 loadDataToCompBtn.onClick = function () {
-    isStroke = isStrokeCheckbox.value;
-    fontFamily = fontFamilyDropDown.selection.text;
-    language = languageObj[languageDropDown.selection.text];
-
-    assetFolder = findAssetFolder();
-    if (assetFolder == '') {
+    var sportFolder = findFolderByName('sports');
+    var mainAssetFolder = findFolderByName('main-asset');
+    if (sportFolder == -1 || mainAssetFolder == -1) {
         alert(
-            'Asset chưa được chọn hoặc sai tên.\nTên folder Asset phải trùng với tên composition\n'
+            'Chưa nhập asset hoặc asset bị lỗi, vui lòng kiểm tra hoặc thử import lại'
         );
         return;
     }
-    loadIntro(assetFolder);
-    loadSport(assetFolder);
-    logoAnimation(assetFolder);
-    loadOutro();
+    try {
+        isStroke = isStrokeCheckbox.value;
+        fontFamily = fontFamilyDropDown.selection.text;
+        language = languageObj[languageDropDown.selection.text];
+        loadIntro(mainAssetFolder);
+        loadSport(sportFolder);
+        logoAnimation(mainAssetFolder);
+        loadOutro();
+    } catch (e) {
+        alert('Lỗi composition. Hãy xóa và tạo lại');
+    }
 };
 
-// 8. Render
+// 7. Render
 renderBtn.onClick = function () {
     var comp = app.project.activeItem;
     var item = app.project.renderQueue.items.add(comp);
     var outputModule = item.outputModule(1);
-    var outputFolder = File($.fileName).path;
-    outputModule.file = File(outputFolder + '/' + comp.name); //outputFolder + '/' +
-    app.project.renderQueue.queueInAME(immediatelyRenderCheckbox.value);
+    var outputFolder = '';
+    if (renderPathDropDown.selection == 0) {
+        alert('File sẽ được lưu ở thư mục Desktop');
+        outputFolder = '~/Desktop';
+    } else {
+        alert('File sẽ được lưu ở cùng thư mục với main.jsx');
+        outputFolder = File($.fileName).path;
+    }
+    outputModule.file = File(outputFolder + '/' + comp.name);
+    if (useMediaEncoderCheckbox.value) {
+        app.project.renderQueue.queueInAME(false);
+    } else {
+        try {
+            outputModule.applyTemplate('H.264');
+        } catch (e) {}
+        app.project.renderQueue.render();
+    }
 };
 
-function loadIntro(assetFolder) {
-    var mainAsset = findAssetFolder().item(1);
-    var backgroundMusic = findItemInFolder(mainAsset, 'backgroundMusic.mp3');
-    var mascot = findItemInFolder(mainAsset, 'mascot.png');
-    var flag = findItemInFolder(mainAsset, 'flag.png');
+function loadIntro(mainAssetFolder) {
+    var backgroundMusic = findItemInFolder(
+        mainAssetFolder,
+        'backgroundMusic.mp3'
+    );
+    var mascot = findItemInFolder(mainAssetFolder, 'mascot.png');
+    var flag = findItemInFolder(mainAssetFolder, 'flag.png');
     var backgroundMusicLayer = mainComp.layers.add(backgroundMusic);
     var mascotLayer = mainComp.layers.add(mascot);
     var flagLayer = mainComp.layers.add(flag);
@@ -689,11 +735,10 @@ function loadIntro(assetFolder) {
     sportTextAnimation();
 }
 
-function logoAnimation(assetFolder) {
-    var mainAsset = assetFolder.item(1);
-    var logo = findItemInFolder(mainAsset, 'logo.png');
+function logoAnimation(mainAssetFolder) {
+    var logo = findItemInFolder(mainAssetFolder, 'logo.png');
     var logoLayer = mainComp.layers.add(logo);
-    var endSportsTime = 10 + findAssetFolder().item(2).numItems * (5 / 3);
+    var endSportsTime = 10 + findFolderByName('sports').numItems * (5 / 3);
     //position
     var keyPosition = {
         2: [-220, 360],
@@ -857,8 +902,8 @@ function sportTextAnimation() {
     sportTextLayer.outPoint = 10;
 }
 
-function loadSport(assetFolder) {
-    var sportFolder = findAssetFolder().item(2);
+function loadSport(sportFolder) {
+    start = 9.8;
     var du = sportFolder.numItems % 3;
     for (var i = 1; i <= sportFolder.numItems - du; i += 3) {
         var sportSlot1 = sportFolder.item(i);
