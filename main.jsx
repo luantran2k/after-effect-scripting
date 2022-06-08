@@ -371,11 +371,8 @@ function chooseColor(hex, button) {
     var colorPickerRes = $.colorPicker(colorHexObj[hex]);
     if (colorPickerRes != -1) {
         rgbColorRes = convertHextoRgb(colorPickerRes);
-        $.writeln('selected a colour');
         colorHexObj[hex] = colorPickerRes;
         updateButtonColour(button, rgbColorRes);
-    } else {
-        $.writeln('did not select a colour');
     }
 }
 
@@ -496,12 +493,14 @@ assetBtn.onClick = function () {
     assetFolder = app.project.importFileWithDialog();
     sportFolder = findFolderByName('sports');
     mainAssetFolder = findFolderByName('main-asset');
-    mainAssetFolderPath = getFolderPath(mainAssetFolder);
-    var dataPath = mainAssetFolderPath + '\\' + 'data.json';
-    try {
-        quickFillData(dataPath);
-    } catch (e) {
-        alert('Tự động điền không hỗ trợ trên phiên bản này');
+    if (mainAssetFolder != -1) {
+        mainAssetFolderPath = getFolderPath(mainAssetFolder);
+        var dataPath = mainAssetFolderPath + '\\' + 'data.json';
+        try {
+            quickFillData(dataPath);
+        } catch (e) {
+            alert('Tự động điền không hỗ trợ trên phiên bản này');
+        }
     }
 };
 
